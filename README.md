@@ -5,6 +5,8 @@ A shop provisioning module that defines:
 - `Shop` for shop-level details
 - `Product` and `ProductQuantity` for a digital catalog that clients can browse and purchase
 - `build_default_inventory()` to seed a 100+ item supermarket-style catalog
+- `clean_catalog_rows()` to normalize external CSV rows into a canonical import format
+- `build_default_homepage_config()` to generate mobile-first homepage/menu content for each shop subdomain
 
 ## Usage
 
@@ -27,7 +29,42 @@ shop = Shop(
 
 # Provision shop details into the system
 details = shop.provision()
+
+# Provision package for ingestion (clean catalog rows + homepage/menu config)
+package = shop.build_provisioning_package()
 ```
+
+## Canonical Catalog Import Format
+
+`clean_catalog_rows()` maps incoming headers and values into strict canonical fields:
+
+- `sku`
+- `product_name`
+- `category`
+- `subcategory`
+- `brand_supplier`
+- `size_quantity`
+- `unit_price_kes`
+- `bulk_pricing_discounts`
+- `stock_availability`
+- `reorder_level`
+- `expiry_date` (normalized to `YYYY-MM-DD`)
+- `product_image`
+- `short_description`
+- `benefits_key_features`
+- `usage_how_to_use`
+- `diet_health_tags` (`|`-separated)
+- `origin_source`
+- `processing_type`
+- `nutritional_info`
+- `ratings_reviews`
+- `promotional_tag` (`|`-separated)
+- `packaging_type`
+- `delivery_option` (`|`-separated)
+- `recipe_pairing_suggestions` (`|`-separated)
+- `video_demo_link`
+
+Validation covers required fields, SKU uniqueness, valid stock states, numeric prices, and valid expiry dates.
 
 ## Shop Fields
 
@@ -65,6 +102,29 @@ Each catalog product supports selling and management attributes including:
 - `health_tags`
 - `origin`
 - `processing_type`
+- `reorder_level`
+- `expiry_date`
+- `product_image`
+- `nutritional_info`
+- `rating_reviews`
 - `packaging_type`
 - `delivery_options`
 - `promotional_tags`
+- `recipe_pairing_suggestions`
+- `video_demo_link`
+
+## Homepage / Menu Configuration
+
+Each shop can include structured, mobile-first homepage data via `homepage_config`:
+
+- Hero content and CTAs (`/menu`, offers route)
+- Category shortcuts routed to filter-ready menu URLs
+- Best-seller and offers blocks
+- Bundle cards with target routes
+- Ordering steps, testimonials, footer contact, and sticky WhatsApp CTA
+
+`Shop.build_provisioning_package()` returns:
+
+1. `catalog_rows` (cleaned canonical rows for ingestion)
+2. `homepage_config` and `menu_config` (display/navigation payloads)
+3. `products_operational` and `products_merchandising` (separated field sets)
