@@ -1,24 +1,28 @@
 # mamarosy
 Shop provision
 
-A shop provisioning module that defines a `Shop` class used to model and provision shop details into a system.
+A shop provisioning module that defines:
+- `Shop` for shop-level details
+- `Product` and `ProductQuantity` for a digital catalog that clients can browse and purchase
+- `build_default_inventory()` to seed a 100+ item supermarket-style catalog
 
 ## Usage
 
 ```python
-from shop import Shop
+from shop import Shop, build_default_inventory
 
 shop = Shop(
     shop_id="shop-001",
-    name="Mamarosy Boutique",
+    name="Mamarosy Health Market",
     owner="Jane Doe",
     address="123 Market Street, Antananarivo",
     phone="+261 20 123 4567",
     email="contact@mamarosy.mg",
-    category="Clothing",
-    description="A boutique specialising in traditional Malagasy clothing.",
+    category="Cereals + Supplements + Spices",
+    description="A retail shop specializing in grains, spices, and wellness products.",
     website="https://mamarosy.mg",
-    tags=["clothing", "boutique", "malagasy"],
+    tags=["cereals", "supplements", "spices"],
+    products=build_default_inventory(),
 )
 
 # Provision shop details into the system
@@ -39,4 +43,28 @@ details = shop.provision()
 | `description` | `str` or `None` | No       | Optional description of the shop         |
 | `website`     | `str` or `None` | No       | Optional shop website URL                |
 | `is_active`   | `bool`          | No       | Whether the shop is active (default True)|
-| `tags`        | `list`          | No       | List of tags for categorisation          |
+| `tags`        | `list`          | No       | List of tags for categorization          |
+| `products`    | `list[Product]` | No       | Catalog products to provision            |
+
+## Product Catalog Fields
+
+Each catalog product supports selling and management attributes including:
+
+- `sku`
+- `name`
+- `category`
+- `subcategory`
+- `quantities` (e.g. 250g, 500g, 1kg with pricing)
+- `stock_status`
+- `supplier_name`
+- `cost_price_kes`
+- `short_description`
+- `benefits`
+- `usage`
+- `diet_tags`
+- `health_tags`
+- `origin`
+- `processing_type`
+- `packaging_type`
+- `delivery_options`
+- `promotional_tags`
